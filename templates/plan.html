@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your AI Study Plan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+
+    body {
+      background-color: #18181b;
+      min-height: 100vh;
+    }
+
+    .glow-bg {
+      position: fixed;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-1 {
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #6366f1;
+    }
+
+    .glow-2 {
+      bottom: -160px;
+      right: -80px;
+      background: #818cf8;
+      width: 360px;
+      height: 360px;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .task-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .task-item:hover {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: rgba(99, 102, 241, 0.2);
+      transform: translateX(6px);
+    }
+
+    .gradient-btn {
+      background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 24px rgba(99, 102, 241, 0.25);
+    }
+
+    .gradient-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+    }
+
+    .gradient-btn:active {
+      transform: translateY(0);
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease-out both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-item:nth-child(1) { animation-delay: 0.08s; }
+    .task-item:nth-child(2) { animation-delay: 0.14s; }
+    .task-item:nth-child(3) { animation-delay: 0.20s; }
+    .task-item:nth-child(4) { animation-delay: 0.26s; }
+    .task-item:nth-child(5) { animation-delay: 0.32s; }
+    .task-item:nth-child(6) { animation-delay: 0.38s; }
+    .task-item:nth-child(7) { animation-delay: 0.44s; }
+    .task-item:nth-child(8) { animation-delay: 0.50s; }
+    .task-item:nth-child(9) { animation-delay: 0.56s; }
+    .task-item:nth-child(10) { animation-delay: 0.62s; }
+  </style>
+</head>
+<body class="relative overflow-x-hidden">
+
+  <!-- Ambient Glow -->
+  <div class="glow-bg glow-1"></div>
+  <div class="glow-bg glow-2"></div>
+
+  <main class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-16 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <div class="text-center mb-10 fade-in" style="animation-delay: 0s;">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full text-xs font-medium tracking-wide uppercase text-indigo-300 border border-indigo-500/20 bg-indigo-500/10">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" />
+        </svg>
+        AI-Powered
+      </div>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+        Your AI Study Plan
+      </h1>
+      <p class="mt-4 text-base sm:text-lg text-zinc-400 max-w-md mx-auto leading-relaxed">
+        A personalized roadmap crafted just for you. Follow each step to stay on track and crush your goals.
+      </p>
+    </div>
+
+    <!-- Glass Card -->
+    <div class="glass-card rounded-2xl sm:rounded-3xl w-full max-w-2xl p-6 sm:p-10 fade-in" style="animation-delay: 0.1s;">
+
+      <!-- List -->
+      <ul class="space-y-3">
+        {% for day in plan %}
+        <li class="task-item fade-in rounded-xl px-5 py-4 flex items-start gap-4">
+          <span class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-lg bg-indigo-500/15 text-indigo-400 text-xs font-bold flex items-center justify-center border border-indigo-500/20">
+            {{ loop.index }}
+          </span>
+          <span class="text-zinc-200 text-sm sm:text-base leading-relaxed">{{ day }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <!-- Divider -->
+      <div class="mt-8 mb-6 border-t border-white/5"></div>
+
+      <!-- CTA -->
+      <div class="flex justify-center">
+        <a href="/" class="gradient-btn inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl text-white text-sm font-semibold tracking-wide no-underline">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
+          </svg>
+          Generate New Plan
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <p class="mt-10 text-xs text-zinc-600 fade-in" style="animation-delay: 0.3s;">
+      Built with AI &middot; Study smarter, not harder
+    </p>
+
+  </main>
+
+</body>
+</html>

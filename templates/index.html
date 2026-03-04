@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus AI - AI-Powered Productivity for Students</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #09090b; color: #fafafa; }
+
+        /* Glow effects */
+        .glow-blue { box-shadow: 0 0 60px rgba(99, 102, 241, 0.15), 0 0 120px rgba(99, 102, 241, 0.05); }
+        .glow-text { text-shadow: 0 0 40px rgba(99, 102, 241, 0.3); }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px);
+        }
+
+        /* Smooth transitions */
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #6366f1;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link:hover { color: #c7d2fe; }
+
+        /* Button animations */
+        .btn-primary {
+            background: #6366f1;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: #5558e6;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-primary:hover::before { opacity: 1; }
+
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(99, 102, 241, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* Form input styles */
+        .form-input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+            color: #fafafa;
+        }
+        .form-input::placeholder { color: #52525b; }
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 20px rgba(99, 102, 241, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* CTA section glow */
+        .cta-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        /* Subtle fade in animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.8s ease forwards; }
+        .fade-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
+
+        /* Icon container */
+        .icon-container {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .mobile-menu.open {
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <span class="text-lg sm:text-xl font-bold text-white tracking-tight">Focus AI</span>
+                </div>
+
+                <!-- Desktop Nav Links -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#home" class="nav-link text-sm text-zinc-400 font-medium">Home</a>
+                    <a href="#features" class="nav-link text-sm text-zinc-400 font-medium">Features</a>
+                    <a href="#generate" class="nav-link text-sm text-zinc-400 font-medium">Generate</a>
+                    <a href="#contact" class="nav-link text-sm text-zinc-400 font-medium">Contact</a>
+                </div>
+
+                <!-- Login Button -->
+                <div class="hidden md:block">
+                    <a href="#" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300">
+                        Login
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="menuBtn" class="md:hidden p-2 text-zinc-400 hover:text-white transition-colors" aria-label="Toggle menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu md:hidden">
+                <div class="pb-4 flex flex-col gap-3 border-t border-white/5 pt-4">
+                    <a href="#home" class="text-sm text-zinc-400 hover:text-white transition-colors py-1">Home</a>
+                    <a href="#features" class="text-sm text-zinc-400 hover:text-white transition-colors py-1">Features</a>
+                    <a href="#generate" class="text-sm text-zinc-400 hover:text-white transition-colors py-1">Generate</a>
+                    <a href="#contact" class="text-sm text-zinc-400 hover:text-white transition-colors py-1">Contact</a>
+                    <a href="#" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-indigo-500/10 border border-indigo-500/20 w-fit">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div class="hero-glow"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
+            <!-- Badge -->
+            <div class="fade-up inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8">
+                <span class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"></span>
+                <span class="text-xs sm:text-sm text-zinc-400 font-medium">AI-Powered Student Productivity</span>
+            </div>
+
+            <!-- Heading -->
+            <h1 class="fade-up fade-up-delay-1 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-tight">
+                Study Smarter,<br>
+                <span class="text-indigo-400 glow-text">Not Harder.</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="fade-up fade-up-delay-2 mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+                Focus AI helps you stay organized, reduce distractions, and build better study habits -- powered by artificial intelligence.
+            </p>
+
+            <!-- Buttons -->
+            <div class="fade-up fade-up-delay-3 mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#generate" class="btn-primary px-8 py-3.5 rounded-xl text-sm font-semibold text-white w-full sm:w-auto text-center">
+                    Get Started
+                </a>
+                <a href="#features" class="btn-outline px-8 py-3.5 rounded-xl text-sm font-semibold text-zinc-300 w-full sm:w-auto text-center">
+                    Learn More
+                </a>
+            </div>
+
+
+        </div>
+
+        <!-- Bottom gradient fade -->
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#09090b] to-transparent"></div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="relative py-24 sm:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center max-w-2xl mx-auto mb-16 sm:mb-20">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-6">
+                    <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Features</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+                    Everything You Need to <span class="text-indigo-400">Excel</span>
+                </h2>
+                <p class="mt-4 sm:mt-6 text-zinc-400 text-base sm:text-lg leading-relaxed">
+                    Powerful AI tools designed specifically for students who want to make the most of their study time.
+                </p>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+
+                <!-- Smart Study Planner -->
+                <div class="glass-card rounded-2xl p-6 sm:p-8">
+                    <div class="icon-container mb-5">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                            <path d="m9 16 2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Smart Study Planner</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">AI creates personalized study schedules that adapt to your pace, deadlines, and learning style.</p>
+                </div>
+
+                <!-- Distraction Blocker -->
+                <div class="glass-card rounded-2xl p-6 sm:p-8">
+                    <div class="icon-container mb-5">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Distraction Blocker</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">Intelligently blocks distracting sites and apps during study sessions to keep you in the zone.</p>
+                </div>
+
+                <!-- AI Notes Assistant -->
+                <div class="glass-card rounded-2xl p-6 sm:p-8">
+                    <div class="icon-container mb-5">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <path d="M9 15h6"></path>
+                            <path d="M9 11h6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">AI Notes Assistant</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">Automatically summarizes lectures, generates flashcards, and organizes your notes effortlessly.</p>
+                </div>
+
+                <!-- Productivity Insights -->
+                <div class="glass-card rounded-2xl p-6 sm:p-8">
+                    <div class="icon-container mb-5">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Productivity Insights</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">Track your study patterns, focus time, and progress with detailed analytics and AI recommendations.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Generate Study Plan Section -->
+    <section id="generate" class="relative py-24 sm:py-32 overflow-hidden">
+        <div class="cta-glow -left-48 top-0"></div>
+        <div class="cta-glow -right-48 bottom-0"></div>
+        <div class="max-w-xl mx-auto px-4 sm:px-6 relative z-10">
+            <div class="glass-card rounded-3xl p-8 sm:p-12 glow-blue">
+                <!-- Section Header -->
+                <div class="text-center mb-8 sm:mb-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass mb-5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        <span class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Study Plan Generator</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
+                        Generate Your Plan
+                    </h2>
+                    <p class="mt-3 sm:mt-4 text-zinc-400 text-sm sm:text-base leading-relaxed">
+                        Enter your details and let AI create a study schedule for you.
+                    </p>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" action="/generate" class="flex flex-col gap-5">
+                    <!-- Subject -->
+                    <div class="flex flex-col gap-2">
+                        <label for="subject" class="text-sm font-medium text-zinc-300">Subject</label>
+                        <input
+                            type="text"
+                            id="subject"
+                            name="subject"
+                            placeholder="e.g. Organic Chemistry"
+                            required
+                            class="form-input w-full px-4 py-3.5 rounded-xl text-sm font-medium"
+                        >
+                    </div>
+
+                    <!-- Exam Date -->
+                    <div class="flex flex-col gap-2">
+                        <label for="exam_date" class="text-sm font-medium text-zinc-300">Exam Date</label>
+                        <input
+                            type="date"
+                            id="exam_date"
+                            name="exam_date"
+                            required
+                            class="form-input w-full px-4 py-3.5 rounded-xl text-sm font-medium"
+                        >
+                    </div>
+
+                    <!-- Hours Per Day -->
+                    <div class="flex flex-col gap-2">
+                        <label for="hours" class="text-sm font-medium text-zinc-300">Hours per day</label>
+                        <input
+                            type="number"
+                            id="hours"
+                            name="hours"
+                            placeholder="e.g. 3"
+                            min="1"
+                            max="16"
+                            required
+                            class="form-input w-full px-4 py-3.5 rounded-xl text-sm font-medium"
+                        >
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button
+                        type="submit"
+                        class="btn-primary w-full mt-2 px-6 py-4 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2"
+                    >
+                        Generate Study Plan
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="relative border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 sm:gap-12">
+                <!-- Brand Column -->
+                <div class="col-span-2 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                            </svg>
+                        </div>
+                        <span class="text-lg font-bold text-white tracking-tight">Focus AI</span>
+                    </div>
+                    <p class="text-sm text-zinc-500 leading-relaxed max-w-xs">AI-powered productivity tools built for students who want to study smarter, not harder.</p>
+                </div>
+
+                <!-- Product -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Product</h4>
+                    <ul class="flex flex-col gap-3">
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Features</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Pricing</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Integrations</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Changelog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Company</h4>
+                    <ul class="flex flex-col gap-3">
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">About</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Legal</h4>
+                    <ul class="flex flex-col gap-3">
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Privacy</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Terms</a></li>
+                        <li><a href="#" class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="mt-12 sm:mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-xs text-zinc-600">&copy; 2026 Focus AI. All rights reserved.</p>
+                <div class="flex items-center gap-5">
+                    <!-- Twitter/X -->
+                    <a href="#" class="text-zinc-600 hover:text-zinc-400 transition-colors" aria-label="Twitter">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                    </a>
+                    <!-- GitHub -->
+                    <a href="#" class="text-zinc-600 hover:text-zinc-400 transition-colors" aria-label="GitHub">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+                    </a>
+                    <!-- LinkedIn -->
+                    <a href="#" class="text-zinc-600 hover:text-zinc-400 transition-colors" aria-label="LinkedIn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile menu toggle script -->
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    mobileMenu.classList.remove('open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
