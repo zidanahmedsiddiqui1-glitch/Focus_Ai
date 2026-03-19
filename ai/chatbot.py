@@ -1,8 +1,12 @@
 import google.generativeai as genai
 from ai.planner_engine import generate_study_plan
 import json
+import os
+from dotenv import load_dotenv
 
-genai.configure(api_key="AIzaSyDmVZJP2Rm-Nw3D7tZ94oVJOsZRLtawYsk")
+load_dotenv()
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 model = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
