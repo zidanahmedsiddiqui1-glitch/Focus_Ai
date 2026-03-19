@@ -1,52 +1,85 @@
+import google.generativeai as genai
 from ai.planner_engine import generate_study_plan
+import json
+import os
+from dotenv import load_dotenv
 
-# Simple memory for conversation
-user_data = {
-    "subjects": None,
-    "exam_date": None,
-    "hours": None
+load_dotenv()
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+model = genai.GenerativeModel(
+    model_name="gemini-2.5-flash",
+    system_instruction="""
+You are Focus AI, a smart productivity assistant for students.
+You help students with:
+1. Creating personalized study plans
+2. Managing personal commitments (gym, prayer, sleep, etc.)
+3. Summarizing notes
+4. Staying focused and avoiding distractions
+
+When a student wants a study plan, collect this information conversationally:
+- Subjects they want to study
+- Their daily commitments (gym, prayer, etc.) with timings if provided
+- Their exam date (ask them to provide it in YYYY-MM-DD format)
+- How many hours they can study per day
+
+Once you have ALL of that information, respond with ONLY this JSON and nothing else:
+{
+  "action": "generate_plan",
+  "subjects": ["Math", "Physics"],
+  "exam_date": "2026-04-15",
+  "hours": 3,
+  "commitments": ["gym 7am-8am", "prayer 5pm"]
 }
 
-def chatbot_response(message):
+For all other conversations, respond naturally and helpfully.
+If the student asks about focus tips, motivation, time management — answer directly.
+Keep responses concise, friendly and encouraging. Use emojis where suitable.
+"""
+)
 
-    message = message.lower()
+sessions = {}
 
-    # Ask for subjects
-    if "study plan" in message:
-        return "Sure! What subjects do you want to study? (Example: Math, Physics)"
+def chatbot_response(message, session_id="default"):
+    if session_id not in sessions:
+        sessions[session_id] = model.start_chat(history=[])
 
-    # Save subjects
-    if "," in message and user_data["subjects"] is None:
-        subjects = [s.strip() for s in message.split(",")]
-        user_data["subjects"] = subjects
-        return "Great. What is your exam date? (YYYY-MM-DD)"
+    chat = sessions[session_id]
 
-    # Save exam date
-    if "-" in message and user_data["exam_date"] is None:
-        user_data["exam_date"] = message
-        return "How many hours can you study per day?"
+    response = chat.send_message(message)
+    reply = response.text.strip()
 
-    # Save hours
-    if message.isdigit() and user_data["hours"] is None:
-        user_data["hours"] = int(message)
+    # Check if Gemini wants to generate a plan
+    if '"action": "generate_plan"' in reply:
+        try:
+            json_start = reply.index("{")
+            json_end = reply.rindex("}") + 1
+            plan_data = json.loads(reply[json_start:json_end])
 
-        plan = generate_study_plan(
-            user_data["subjects"],
-            user_data["exam_date"],
-            user_data["hours"]
-        )
+            plan = generate_study_plan(
+                plan_data["subjects"],
+                plan_data["exam_date"],
+                plan_data["hours"],
+                plan_data.get("commitments", [])
+            )
 
-        # Convert plan to readable text
-        plan_text = ""
+            if not plan:
+                return "⚠️ Your exam date seems to be in the past. Could you give me a future date?"
 
-        for day in plan[:3]:  # show first 3 days
-            plan_text += f"\n📅 {day['date']}\n"
+            plan_text = f"📚 Your Study Plan is ready! ({len(plan)} days until exam)\n"
+            for day in plan[:3]:
+                plan_text += f"\n📅 {day['date']}\n"
+                for subject in day["subjects"]:
+                    plan_text += f"  • {subject['subject'].title()} → {subject['hours']} hrs\n"
+                if day["commitments"]:
+                    plan_text += f"  🔒 Commitments: {', '.join(day['commitments'])}\n"
+            if len(plan) > 3:
+                plan_text += f"\n...and {len(plan) - 3} more days! 💪"
+            plan_text += "\n\nSay 'new plan' anytime to create another one!"
+            return plan_text
 
-            for subject in day["subjects"]:
-                plan_text += f"• {subject['subject'].title()} → {subject['hours']} hours\n"
+        except (json.JSONDecodeError, KeyError, ValueError):
+            return reply
 
-        return "📚 Your Study Plan:\n" + plan_text
-
-
-
-    return "I can help you create a study plan. Just say 'I want a study plan'."
+    return reply

@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 
-def generate_study_plan(subjects, exam_date, hours_per_day):
+def generate_study_plan(subjects, exam_date, hours_per_day, commitments=None):
+    if commitments is None:
+        commitments = []
 
     today = datetime.today()
     exam = datetime.strptime(exam_date, "%Y-%m-%d")
@@ -15,7 +17,8 @@ def generate_study_plan(subjects, exam_date, hours_per_day):
 
         daily_plan = {
             "date": study_day.strftime("%Y-%m-%d"),
-            "subjects": []
+            "subjects": [],
+            "commitments": commitments
         }
 
         hours_each = round(hours_per_day / len(subjects),1)

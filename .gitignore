@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDE
+.idea/
+.vscode/
+
+# Temp files
+error.txt
+models.json
+models.txt
+test_gemini.py
+list_models.py
