@@ -1,16 +1,18 @@
-import google.generativeai as genai
+import os
+from google import genai
+from google.genai import types
+from dotenv import load_dotenv
 from ai.planner_engine import generate_study_plan
 import json
-import os
-from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Initialize the new google-genai client
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
-    system_instruction="""
+# Configuration for the model
+MODEL_NAME ="gemini-flash-latest"
+SYSTEM_INSTRUCTION = """
 You are Focus AI, a smart productivity assistant for students.
 You help students with:
 1. Creating personalized study plans
@@ -37,18 +39,29 @@ For all other conversations, respond naturally and helpfully.
 If the student asks about focus tips, motivation, time management — answer directly.
 Keep responses concise, friendly and encouraging. Use emojis where suitable.
 """
-)
 
+# Sessions to maintain chat history
 sessions = {}
 
 def chatbot_response(message, session_id="default"):
+    # In the new google-genai SDK, history is a list of Content objects
+    # For simplicity, we can just pass the string history if using start_chat
     if session_id not in sessions:
-        sessions[session_id] = model.start_chat(history=[])
+        sessions[session_id] = client.chats.create(
+            model=MODEL_NAME,
+            config={
+                'system_instruction': SYSTEM_INSTRUCTION
+            }
+        )
 
     chat = sessions[session_id]
 
-    response = chat.send_message(message)
-    reply = response.text.strip()
+    try:
+        response = chat.send_message(message)
+        reply = response.text.strip()
+    except Exception as e:
+        print(f"Error in chatbot_response: {e}")
+        return "Sorry, I encountered an error. Please try again later."
 
     # Check if Gemini wants to generate a plan
     if '"action": "generate_plan"' in reply:
@@ -79,7 +92,8 @@ def chatbot_response(message, session_id="default"):
             plan_text += "\n\nSay 'new plan' anytime to create another one!"
             return plan_text
 
-        except (json.JSONDecodeError, KeyError, ValueError):
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"Error parsing plan JSON: {e}")
             return reply
 
     return reply
