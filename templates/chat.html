@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat - Focus AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #000;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .typing-dot {
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-white">
+                        <path
+                            d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" />
+                        <path d="M9 13a4.5 4.5 0 0 0 3-4" />
+                        <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5" />
+                        <path d="M3.477 10.896a4 4 0 0 1 .585-.396" />
+                        <path d="M6 18a4 4 0 0 1-1.967-.516" />
+                        <path d="M12 13h4" />
+                        <path d="M12 18h6a2 2 0 0 1 2 2v1" />
+                        <path d="M12 8h8" />
+                        <path d="M16 8V5a2 2 0 0 1 2-2" />
+                        <circle cx="16" cy="13" r=".5" />
+                        <circle cx="18" cy="3" r=".5" />
+                        <circle cx="20" cy="21" r=".5" />
+                        <circle cx="20" cy="8" r=".5" />
+                    </svg>
+                </div>
+                <span class="text-lg font-semibold text-white">Focus AI</span>
+            </a>
+
+            <div class="flex items-center gap-1">
+                <a href="/"
+                    class="nav-link px-4 py-2 rounded-lg transition-all text-zinc-400 hover:text-white hover:bg-white/5">
+                    Dashboard
+                </a>
+                <a href="/planner-page"
+                    class="nav-link px-4 py-2 rounded-lg transition-all text-zinc-400 hover:text-white hover:bg-white/5">
+                    Study Planner
+                </a>
+                <a href="/chat-page"
+                    class="nav-link px-4 py-2 rounded-lg transition-all bg-white/10 text-white">
+                    AI Chat
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- AI Chat Section -->
+    <section id="chat" class="min-h-screen bg-black pt-24 pb-12 px-6">
+        <div class="max-w-4xl mx-auto h-[calc(100vh-12rem)] flex flex-col">
+            <!-- Header -->
+            <div class="mb-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-white">
+                            <path d="M12 8V4H8" />
+                            <rect width="16" height="12" x="4" y="8" rx="2" />
+                            <path d="M2 14h2" />
+                            <path d="M20 14h2" />
+                            <path d="M15 13v2" />
+                            <path d="M9 13v2" />
+                        </svg>
+                    </div>
+                    <h1 class="text-4xl text-white font-semibold">AI Chat</h1>
+                </div>
+                <p class="text-zinc-400">Ask me anything about your studies</p>
+            </div>
+
+            <!-- Chat Container -->
+            <div
+                class="flex-1 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden flex flex-col">
+                <!-- Messages -->
+                <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <div class="flex gap-3">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-white">
+                                <path d="M12 8V4H8" />
+                                <rect width="16" height="12" x="4" y="8" rx="2" />
+                                <path d="M2 14h2" />
+                                <path d="M20 14h2" />
+                                <path d="M15 13v2" />
+                                <path d="M9 13v2" />
+                            </svg>
+                        </div>
+                        <div class="max-w-[70%] rounded-2xl p-4 bg-white/10 border border-white/10">
+                            <p class="text-white">Hi! I'm your AI study assistant. How can I help you today?</p>
+                            <p class="text-xs text-zinc-400 mt-2" id="initialTime"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-4 border-t border-white/10">
+                    <div class="flex gap-2">
+                        <input type="text" id="chatInput" placeholder="Ask me anything..."
+                            class="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                        <button id="sendButton"
+                            class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium hover:from-purple-600 hover:to-pink-700 transition-all flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m22 2-7 20-4-9-9-4Z" />
+                                <path d="M22 2 11 13" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Set initial chat time
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('initialTime').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        });
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Add user message
+            const userMessage = `
+                <div class="flex gap-3 flex-row-reverse">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="max-w-[70%] rounded-2xl p-4 bg-gradient-to-r from-indigo-500 to-purple-600">
+                        <p class="text-white">${message}</p>
+                        <p class="text-xs text-zinc-200 mt-2">${time}</p>
+                    </div>
+                </div>
+            `;
+            chatMessages.innerHTML += userMessage;
+            input.value = '';
+
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Show typing indicator
+            const typingIndicator = `
+                <div class="flex gap-3" id="typingIndicator">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+                    </div>
+                    <div class="bg-white/10 border border-white/10 rounded-2xl p-4">
+                        <div class="flex gap-1">
+                            <div class="w-2 h-2 rounded-full bg-zinc-400 typing-dot"></div>
+                            <div class="w-2 h-2 rounded-full bg-zinc-400 typing-dot"></div>
+                            <div class="w-2 h-2 rounded-full bg-zinc-400 typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessages.innerHTML += typingIndicator;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message, session_id: 'default' })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('typingIndicator').remove();
+                    const aiTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const aiMessage = `
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+                            </div>
+                            <div class="max-w-[70%] rounded-2xl p-4 bg-white/10 border border-white/10">
+                                <p class="text-white">${data.reply}</p>
+                                <p class="text-xs text-zinc-400 mt-2">${aiTime}</p>
+                            </div>
+                        </div>
+                    `;
+                    chatMessages.innerHTML += aiMessage;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                })
+                .catch(() => {
+                    document.getElementById('typingIndicator').remove();
+                    chatMessages.innerHTML += `<div class="text-red-400 text-sm">Sorry, encountered an error. Please try again.</div>`;
+                });
+        }
+
+        // Send on click
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+
+        // Enable Enter key for chat
+        document.getElementById('chatInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>
